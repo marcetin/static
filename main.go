@@ -6,7 +6,6 @@ import (
 	"github.com/gorilla/mux"
 	"log"
 	"net/http"
-	"time"
 )
 
 var (
@@ -20,12 +19,12 @@ func main() {
 	//	//HostPolicy: autocert.HostWhitelist("ws.okno.rs", "wss.okno.rs", "ns.okno.rs"),
 	//	Cache:      autocert.DirCache(path),
 	//}
-	www := &http.Server{
-		Handler:      handler(r),
-		Addr:         ":80",
-		WriteTimeout: 15 * time.Second,
-		ReadTimeout:  15 * time.Second,
-	}
+	//www := &http.Server{
+	//	Handler:      handler(r),
+	//	Addr:         ":80",
+	//	WriteTimeout: 15 * time.Second,
+	//	ReadTimeout:  15 * time.Second,
+	//}
 	//wwwtls := www
 	//wwwtls.Addr = ":443"
 	//wwwtls.TLSConfig =&tls.Config{
@@ -33,16 +32,18 @@ func main() {
 	//}
 	//r.PathPrefix("/").Handler(http.StripPrefix("/", http.FileServer(http.Dir("/home/gorun/okno/templates/"))))
 	//log.Fatal(http.ListenAndServe(":80", handlers.CORS(handlers.AllowedOrigins([]string{"*"}))(r)))
-
+	log.Fatal(http.ListenAndServe(":80", handler(r)))
 	//log.Fatal(http.ListenAndServeTLS("","",":80", handlers.CORS(handlers.AllowedOrigins([]string{"*"}))(r)))
-	log.Fatal(www.ListenAndServe())
+	//log.Fatal(www.ListenAndServe())
 	//log.Fatal(wwwtls.ListenAndServeTLS("", ""))
 }
 
 func handler(r *mux.Router) http.Handler {
-	r.Host("{domain}").Subrouter().PathPrefix("/").Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		http.StripPrefix("/", http.FileServer(http.Dir(path+mux.Vars(r)["domain"])))
+	r.Host("{domain}").Subrouter()
+	r.PathPrefix("/").Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		fmt.Println("daad", path+mux.Vars(r)["domain"])
+		http.StripPrefix("/", http.FileServer(http.Dir(path+mux.Vars(r)["domain"])))
+
 	}))
 	//return handlers.CORS()(handlers.CompressHandler(interceptHandler(r, defaultErrorHandler)))
 	return handlers.CORS(handlers.AllowedOrigins([]string{"*"}))(r)
