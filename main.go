@@ -30,45 +30,33 @@ func main() {
 	//}
 	//r.PathPrefix("/").Handler(http.StripPrefix("/", http.FileServer(http.Dir("/home/gorun/okno/templates/"))))
 	//log.Fatal(http.ListenAndServe(":80", handlers.CORS(handlers.AllowedOrigins([]string{"*"}))(r)))
+	http.HandleFunc("/", handler)
 
-	log.Fatal(http.ListenAndServe(":80", http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		rt := mux.NewRouter()
-		p := ""
-		rt.Host("{sub}.{domain}.{tld}").PathPrefix("/").Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-			//v := mux.Vars(r)
-			p = path + mux.Vars(r)["domain"] + "." + mux.Vars(r)["tld"]
-			if mux.Vars(r)["sub"] != "" {
-				p = path + mux.Vars(r)["sub"] + "." + mux.Vars(r)["domain"] + "." + mux.Vars(r)["tld"]
-				fmt.Println("p221:", p)
-			}
-			fmt.Println("p1:", p)
-			http.StripPrefix("/", http.FileServer(http.Dir(p)))
-		}))
-
-		//http.ServeFile(w, r, p)
-	})))
+	log.Fatal(http.ListenAndServe(":80", nil))
 	//log.Fatal(http.ListenAndServeTLS("","",":80", handlers.CORS(handlers.AllowedOrigins([]string{"*"}))(r)))
 	//log.Fatal(www.ListenAndServe())
 	//log.Fatal(wwwtls.ListenAndServeTLS("", ""))
 }
 
-//func handler(r *mux.Router) http.Handler {
-//p := ""
-//r.Host("{sub}.{domain}.{tld}").PathPrefix("/").Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-//	//v := mux.Vars(r)
-//	p = path + mux.Vars(r)["domain"] + "." + mux.Vars(r)["tld"]
-//	if mux.Vars(r)["sub"] != "" {
-//		p = path + mux.Vars(r)["sub"] + "." + mux.Vars(r)["domain"] + "." + mux.Vars(r)["tld"]
-//		fmt.Println("p221:", p)
-//	}
-//	fmt.Println("p1:", p)
-//
-//	//http.StripPrefix("/", http.FileServer(http.Dir(p)))
-//}))
-////return handlers.CORS()(handlers.CompressHandler(interceptHandler(r, defaultErrorHandler)))
-////return handlers.CORS(handlers.AllowedOrigins([]string{"*"}))(r)
-//return http.StripPrefix("/", http.FileServer(http.Dir(p)))
-//}
+func handler(w http.ResponseWriter, r *http.Request) {
+	rt := mux.NewRouter()
+	p := ""
+	rt.Host("{sub}.{domain}.{tld}").PathPrefix("/").Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		//v := mux.Vars(r)
+		p = path + mux.Vars(r)["domain"] + "." + mux.Vars(r)["tld"]
+		if mux.Vars(r)["sub"] != "" {
+			p = path + mux.Vars(r)["sub"] + "." + mux.Vars(r)["domain"] + "." + mux.Vars(r)["tld"]
+			fmt.Println("p221:", p)
+		}
+		fmt.Println("p1:", p)
+
+		//http.StripPrefix("/", http.FileServer(http.Dir(p)))
+	}))
+	//return handlers.CORS()(handlers.CompressHandler(interceptHandler(r, defaultErrorHandler)))
+	//return handlers.CORS(handlers.AllowedOrigins([]string{"*"}))(r)
+	//return http.StripPrefix("/", http.FileServer(http.Dir(p)))
+	http.StripPrefix("/", http.FileServer(http.Dir(p)))
+}
 
 func defaultErrorHandler(w http.ResponseWriter, status int) {
 	//t := template.Must(template.ParseFiles("errors/error.html"))
