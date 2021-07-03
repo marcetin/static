@@ -17,6 +17,8 @@ func main() {
 	}
 	for _, f := range sites {
 		n := f.Name()
+		fmt.Println("domain:", n)
+
 		r.Host(n).Subrouter()
 		r.StrictSlash(true)
 		r.PathPrefix("/").Handler(http.StripPrefix("/", http.FileServer(http.Dir(path+n))))
