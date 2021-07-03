@@ -45,29 +45,29 @@ func handler(r *mux.Router) http.Handler {
 	r.Host("{domain}").Subrouter().PathPrefix("/").Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		http.StripPrefix("/", http.FileServer(http.Dir(path+mux.Vars(r)["domain"])))
 	}))
-	return handlers.CORS()(handlers.CompressHandler(interceptHandler(r, defaultErrorHandler)))
+	//return handlers.CORS()(handlers.CompressHandler(interceptHandler(r, defaultErrorHandler)))
 	return handlers.CORS(handlers.AllowedOrigins([]string{"*"}))(r)
 }
 
-func defaultErrorHandler(w http.ResponseWriter, status int) {
-	//t := template.Must(template.ParseFiles("errors/error.html"))
-	//w.Header().Set("Content-Type", "text/html")
-	//t.Execute(w, map[string]interface{}{"status": status})
-	w.Header().Set("Content-Type", "text/html")
-	//tpl.TemplateHandler(cfg.Path).ExecuteTemplate(w, "error_gohtml", map[string]interface{}{"status": status})
-}
-func interceptHandler(next http.Handler, errH errorHandler) http.Handler {
-	if errH == nil {
-		errH = defaultErrorHandler
-	}
-	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		next.ServeHTTP(&interceptResponseWriter{w, errH}, r)
-	})
-}
+//func defaultErrorHandler(w http.ResponseWriter, status int) {
+//	//t := template.Must(template.ParseFiles("errors/error.html"))
+//	//w.Header().Set("Content-Type", "text/html")
+//	//t.Execute(w, map[string]interface{}{"status": status})
+//	w.Header().Set("Content-Type", "text/html")
+//	//tpl.TemplateHandler(cfg.Path).ExecuteTemplate(w, "error_gohtml", map[string]interface{}{"status": status})
+//}
+//func interceptHandler(next http.Handler, errH errorHandler) http.Handler {
+//	if errH == nil {
+//		errH = defaultErrorHandler
+//	}
+//	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+//		next.ServeHTTP(&interceptResponseWriter{w, errH}, r)
+//	})
+//}
 
-type errorHandler func(http.ResponseWriter, int)
-
-type interceptResponseWriter struct {
-	http.ResponseWriter
-	errH func(http.ResponseWriter, int)
-}
+//type errorHandler func(http.ResponseWriter, int)
+//
+//type interceptResponseWriter struct {
+//	http.ResponseWriter
+//	errH func(http.ResponseWriter, int)
+//}
