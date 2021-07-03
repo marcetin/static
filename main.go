@@ -1,6 +1,7 @@
 package main
 
 import (
+	"fmt"
 	"github.com/gorilla/handlers"
 	"github.com/gorilla/mux"
 	"log"
@@ -41,6 +42,7 @@ func main() {
 func handler(r *mux.Router) http.Handler {
 	r.Host("{domain}").Subrouter().PathPrefix("/").Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		http.StripPrefix("/", http.FileServer(http.Dir(path+mux.Vars(r)["domain"])))
+		fmt.Println("daad", path+mux.Vars(r)["domain"])
 	}))
 	//return handlers.CORS()(handlers.CompressHandler(interceptHandler(r, defaultErrorHandler)))
 	return handlers.CORS(handlers.AllowedOrigins([]string{"*"}))(r)
