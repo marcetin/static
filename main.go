@@ -9,7 +9,7 @@ import (
 )
 
 var (
-	path = "~/www"
+	path = "/var/www/"
 )
 
 func main() {
