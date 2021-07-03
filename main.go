@@ -22,6 +22,9 @@ func main() {
 		s := r.Host(n).Subrouter()
 		s.StrictSlash(true)
 		s.PathPrefix("/").Handler(http.StripPrefix("/", http.FileServer(http.Dir(path+n))))
+		if n == "json.okno.rs" {
+			s.Headers("Content-Type", "application/json")
+		}
 	}
 	log.Fatal(http.ListenAndServe(":80", handlers.CORS(handlers.AllowedOrigins([]string{"*"}))(r)))
 }
