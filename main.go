@@ -2,7 +2,6 @@ package main
 
 import (
 	"fmt"
-	"github.com/gorilla/handlers"
 	"github.com/gorilla/mux"
 	"log"
 	"net/http"
@@ -39,19 +38,21 @@ func main() {
 }
 
 func handler(r *mux.Router) http.Handler {
+	p := ""
 	r.Host("{sub}.{domain}.{tld}").PathPrefix("/").Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		//v := mux.Vars(r)
-		p := path + mux.Vars(r)["domain"] + "." + mux.Vars(r)["tld"]
+		p = path + mux.Vars(r)["domain"] + "." + mux.Vars(r)["tld"]
 		if mux.Vars(r)["sub"] != "" {
 			p = path + mux.Vars(r)["sub"] + "." + mux.Vars(r)["domain"] + "." + mux.Vars(r)["tld"]
 			fmt.Println("p221:", p)
 		}
 		fmt.Println("p1:", p)
 
-		http.StripPrefix("/", http.FileServer(http.Dir(p)))
+		//http.StripPrefix("/", http.FileServer(http.Dir(p)))
 	}))
 	//return handlers.CORS()(handlers.CompressHandler(interceptHandler(r, defaultErrorHandler)))
-	return handlers.CORS(handlers.AllowedOrigins([]string{"*"}))(r)
+	//return handlers.CORS(handlers.AllowedOrigins([]string{"*"}))(r)
+	return http.StripPrefix("/", http.FileServer(http.Dir(p)))
 }
 
 func defaultErrorHandler(w http.ResponseWriter, status int) {
