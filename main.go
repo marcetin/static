@@ -1,11 +1,11 @@
 package main
 
 import (
+	"fmt"
 	"github.com/gorilla/handlers"
 	"github.com/gorilla/mux"
 	"io/ioutil"
 	"log"
-	"fmt"
 	"net/http"
 )
 
@@ -19,10 +19,9 @@ func main() {
 	for _, f := range sites {
 		n := f.Name()
 		fmt.Println("domain:", n)
-
-		r.Host(n).Subrouter()
-		r.StrictSlash(true)
-		r.PathPrefix("/").Handler(http.StripPrefix("/", http.FileServer(http.Dir(path+n))))
+		s := r.Host(n).Subrouter()
+		s.StrictSlash(true)
+		s.PathPrefix("/").Handler(http.StripPrefix("/", http.FileServer(http.Dir(path+n))))
 	}
 	log.Fatal(http.ListenAndServe(":80", handlers.CORS(handlers.AllowedOrigins([]string{"*"}))(r)))
 }
