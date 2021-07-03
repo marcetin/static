@@ -49,13 +49,13 @@ func handler(w http.ResponseWriter, r *http.Request) {
 			fmt.Println("p221:", p)
 		}
 		fmt.Println("p1:", p)
+		http.StripPrefix("/", http.FileServer(http.Dir(p)))
 
 		//http.StripPrefix("/", http.FileServer(http.Dir(p)))
 	}))
 	//return handlers.CORS()(handlers.CompressHandler(interceptHandler(r, defaultErrorHandler)))
 	//return handlers.CORS(handlers.AllowedOrigins([]string{"*"}))(r)
 	//return http.StripPrefix("/", http.FileServer(http.Dir(p)))
-	http.StripPrefix("/", http.FileServer(http.Dir(p)))
 }
 
 func defaultErrorHandler(w http.ResponseWriter, status int) {
