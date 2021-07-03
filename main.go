@@ -12,6 +12,7 @@ var (
 )
 
 func main() {
+	r := mux.NewRouter()
 	//tlsman := autocert.Manager{
 	//	Prompt:     autocert.AcceptTOS,
 	//	//HostPolicy: autocert.HostWhitelist("ws.okno.rs", "wss.okno.rs", "ns.okno.rs"),
@@ -30,18 +31,15 @@ func main() {
 	//}
 	//r.PathPrefix("/").Handler(http.StripPrefix("/", http.FileServer(http.Dir("/home/gorun/okno/templates/"))))
 	//log.Fatal(http.ListenAndServe(":80", handlers.CORS(handlers.AllowedOrigins([]string{"*"}))(r)))
-	http.HandleFunc("/", handler)
-
-	log.Fatal(http.ListenAndServe(":80", nil))
+	log.Fatal(http.ListenAndServe(":80", handler(r)))
 	//log.Fatal(http.ListenAndServeTLS("","",":80", handlers.CORS(handlers.AllowedOrigins([]string{"*"}))(r)))
 	//log.Fatal(www.ListenAndServe())
 	//log.Fatal(wwwtls.ListenAndServeTLS("", ""))
 }
 
-func handler(w http.ResponseWriter, r *http.Request) {
-	rt := mux.NewRouter()
+func handler(r *mux.Router) http.Handler {
 	p := ""
-	rt.Host("{sub}.{domain}.{tld}").PathPrefix("/").Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+	r.Host("{sub}.{domain}.{tld}").PathPrefix("/").Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		//v := mux.Vars(r)
 		p = path + mux.Vars(r)["domain"] + "." + mux.Vars(r)["tld"]
 		if mux.Vars(r)["sub"] != "" {
@@ -49,13 +47,12 @@ func handler(w http.ResponseWriter, r *http.Request) {
 			fmt.Println("p221:", p)
 		}
 		fmt.Println("p1:", p)
-		http.StripPrefix("/", http.FileServer(http.Dir(p)))
 
 		//http.StripPrefix("/", http.FileServer(http.Dir(p)))
 	}))
 	//return handlers.CORS()(handlers.CompressHandler(interceptHandler(r, defaultErrorHandler)))
 	//return handlers.CORS(handlers.AllowedOrigins([]string{"*"}))(r)
-	//return http.StripPrefix("/", http.FileServer(http.Dir(p)))
+	return http.StripPrefix("/", http.FileServer(http.Dir(p)))
 }
 
 func defaultErrorHandler(w http.ResponseWriter, status int) {
