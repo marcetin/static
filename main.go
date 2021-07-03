@@ -39,11 +39,13 @@ func main() {
 }
 
 func handler(r *mux.Router) http.Handler {
-	r.Host("{domain}").Subrouter()
+	r.Host("{sub}.{domain}.{tld}").Subrouter()
 	r.PathPrefix("/").Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		v := mux.Vars(r)
+		//v := mux.Vars(r)
 
-		fmt.Println("domain:", path+v["domain"])
+		fmt.Println("tld:", path+mux.Vars(r)["tld"])
+		fmt.Println("domain:", path+mux.Vars(r)["domain"])
+		fmt.Println("sub:", path+mux.Vars(r)["sub"])
 		http.StripPrefix("/", http.FileServer(http.Dir(path+mux.Vars(r)["domain"])))
 
 	}))
