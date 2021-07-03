@@ -41,7 +41,9 @@ func main() {
 func handler(r *mux.Router) http.Handler {
 	r.Host("{domain}").Subrouter()
 	r.PathPrefix("/").Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		fmt.Println("daad", path+mux.Vars(r)["domain"])
+		v := mux.Vars(r)
+
+		fmt.Println("domain:", path+v["domain"])
 		http.StripPrefix("/", http.FileServer(http.Dir(path+mux.Vars(r)["domain"])))
 
 	}))
