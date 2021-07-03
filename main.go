@@ -41,12 +41,14 @@ func main() {
 func handler(r *mux.Router) http.Handler {
 	r.Host("{sub}.{domain}.{tld}").PathPrefix("/").Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		//v := mux.Vars(r)
+		p := path + mux.Vars(r)["domain"] + "." + mux.Vars(r)["tld"]
+		if mux.Vars(r)["sub"] != "" {
+			p = path + mux.Vars(r)["sub"] + "." + mux.Vars(r)["domain"] + "." + mux.Vars(r)["tld"]
+			fmt.Println("p221:", p)
+		}
+		fmt.Println("p1:", p)
 
-		fmt.Println("tld:", path+mux.Vars(r)["tld"])
-		fmt.Println("domain:", path+mux.Vars(r)["domain"])
-		fmt.Println("sub:", path+mux.Vars(r)["sub"])
-		http.StripPrefix("/", http.FileServer(http.Dir(path+mux.Vars(r)["domain"])))
-
+		http.StripPrefix("/", http.FileServer(http.Dir(p)))
 	}))
 	//return handlers.CORS()(handlers.CompressHandler(interceptHandler(r, defaultErrorHandler)))
 	return handlers.CORS(handlers.AllowedOrigins([]string{"*"}))(r)
