@@ -3,7 +3,6 @@ module github.com/marcetin/static
 go 1.16
 
 require (
-	github.com/gorilla/handlers v1.5.1
-	github.com/gorilla/mux v1.8.0
-	golang.org/x/crypto v0.0.0-20210616213533-5ff15b29337e
+	github.com/gofiber/fiber v1.14.6
+	golang.org/x/sys v0.0.0-20210615035016-665e8c7367d1 // indirect
 )

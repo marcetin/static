@@ -2,16 +2,25 @@ package main
 
 import (
 	"fmt"
-	"github.com/gorilla/handlers"
-	"github.com/gorilla/mux"
 	"io/ioutil"
 	"log"
-	"net/http"
+	"os"
+
+	"github.com/gofiber/fiber"
+	"github.com/gofiber/fiber/middleware"
+)
+
+type (
+	Host struct {
+		Fiber *fiber.App
+	}
 )
 
 func main() {
-	path := "/var/www/"
-	r := mux.NewRouter()
+	app := fiber.New()
+	path := os.Getenv("JORMSTATICPATH")
+	// Hosts
+	hosts := map[string]*Host{}
 	sites, err := ioutil.ReadDir(path)
 	if err != nil {
 		log.Fatal(err)
@@ -19,12 +28,20 @@ func main() {
 	for _, f := range sites {
 		n := f.Name()
 		fmt.Println("domain:", n)
-		s := r.Host(n).Subrouter()
-		s.StrictSlash(true)
-		s.PathPrefix("/").Handler(http.StripPrefix("/", http.FileServer(http.Dir(path+n))))
-		if n == "json.okno.rs" {
-			s.Headers("Content-Type", "application/json")
-		}
+		sub := fiber.New()
+		sub.Use(middleware.Logger())
+		sub.Use(middleware.Recover())
+		sub.Static("/", path+n)
+		hosts[n] = &Host{sub}
 	}
-	log.Fatal(http.ListenAndServe(":80", handlers.CORS(handlers.AllowedOrigins([]string{"*"}))(r)))
+	// Server
+	app.Use(func(c *fiber.Ctx) {
+		host := hosts[c.Hostname()]
+		if host == nil {
+			c.SendStatus(fiber.StatusNotFound)
+		} else {
+			host.Fiber.Handler()(c.Fasthttp)
+		}
+	})
+	log.Fatal(app.Listen(":" + os.Getenv("JORMSTATICPORT")))
 }
